@@ -4,13 +4,22 @@ import { combineStyles } from "./utils/combineStyles";
 
 // Note for setting theme https://github.com/wix/react-native-ui-lib/issues/1725
 
+const extractFontFamily = (props: any) => {
+  let fontFamily = "poppins";
+  if ((props as any).textBold) {
+    fontFamily = "poppins-bold";
+  }
+  return fontFamily;
+};
+
 export default () => {
   ThemeManager.setComponentForcedTheme("Button", (props: ButtonProps): ButtonProps => {
+    const fontFamily = extractFontFamily(props);
     return {
       ...props,
       labelStyle: combineStyles<TextStyle>(
         {
-          fontFamily: "poppins",
+          fontFamily,
         },
         props.labelStyle
       ),
@@ -18,10 +27,7 @@ export default () => {
   });
 
   ThemeManager.setComponentForcedTheme("Text", (props: TextProps) => {
-    let fontFamily = "poppins";
-    if ((props as any).textBold) {
-      fontFamily = "poppins-bold";
-    }
+    const fontFamily = extractFontFamily(props);
     return {
       ...props,
       style: combineStyles<StyleProp<TextStyle | Animated.AnimatedProps<TextStyle>>>({ fontFamily }, props.style),

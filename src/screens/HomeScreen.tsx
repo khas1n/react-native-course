@@ -5,21 +5,24 @@ import { View, Colors, ActionBar } from "react-native-ui-lib";
 
 import { FlatList, Alert } from "react-native";
 
-import data from "../../data.json";
 import { Workout } from "../types/data";
 import WorkoutItem from "../components/WorkoutItem";
+import { useWorkouts } from "../hooks/useWorkouts";
 
 type HomeScreenProps = NativeStackHeaderProps;
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const workouts = useWorkouts();
+
   const onPressWorkoutItemHandler = (item: Workout): void => {
-    navigation.push("WorkoutDetail", { item });
+    navigation.push("WorkoutDetail", { slug: item.slug });
   };
+
   const renderWorkoutItem = ({ item }: { item: Workout }) => <WorkoutItem item={item} onPress={() => onPressWorkoutItemHandler(item)} />;
 
   return (
     <View backgroundColor={Colors.grey70} flex-1>
-      <FlatList renderItem={renderWorkoutItem} data={data as Workout[]} keyExtractor={(item) => item.slug} />
+      <FlatList renderItem={renderWorkoutItem} data={workouts} keyExtractor={(item) => item.slug} />
       <View>
         <ActionBar
           backgroundColor={Colors.primary}

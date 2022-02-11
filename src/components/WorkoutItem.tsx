@@ -1,12 +1,12 @@
 import React from "react";
-import { Alert, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { ListItem, View, Text, Colors } from "react-native-ui-lib";
 import { Workout } from "../types/data";
 import { formatSec } from "../utils/time";
 
 interface WorkoutItemProps {
   item: Workout;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 const WorkoutItem: React.FC<WorkoutItemProps> = ({ item, onPress }) => (

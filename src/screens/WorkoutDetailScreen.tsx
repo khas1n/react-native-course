@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { View, Text, Button, Card } from "react-native-ui-lib";
 import { useWorkoutBySlug } from "../hooks/useWorkoutBySlug";
-import { Sequance, Workout } from "../types/data";
+import { Sequence, Workout } from "../types/data";
 
 import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
 import Dialog from "../components/styled/Dialog";
@@ -23,7 +23,7 @@ const WorkoutDetailScreen: React.FC<WorkoutDetailScreenProps> = ({ route }) => {
   const SLUG = route.params.slug;
   const workout = useWorkoutBySlug(SLUG);
   const [trackerIdx, setTrackerIdx] = useState(-1);
-  const [sequence, setSequence] = useState<Sequance[]>([]);
+  const [sequence, setSequence] = useState<Sequence[]>([]);
 
   const { countDown, isRunning, stop, start } = useCountDown(trackerIdx);
   const startupSeq = ["3", "2", "1", "Go"].reverse();
@@ -79,14 +79,18 @@ const WorkoutDetailScreen: React.FC<WorkoutDetailScreenProps> = ({ route }) => {
               </View>
             );
           }}>
-          {workout.sequence.map((si, idx) => (
-            <View style={styles.sequanceItem} key={si.slug}>
-              <Text>
-                {si.name} | {si.type} | {formatSec(si.duration)}
-              </Text>
-              {workout.sequence.length - 1 !== idx && <FontAwesome name="arrow-down" size={20} />}
-            </View>
-          ))}
+          {() => (
+            <>
+              {workout.sequence.map((si, idx) => (
+                <View style={styles.sequanceItem} key={si.slug}>
+                  <Text>
+                    {si.name} | {si.type} | {formatSec(si.duration)}
+                  </Text>
+                  {workout.sequence.length - 1 !== idx && <FontAwesome name="arrow-down" size={20} />}
+                </View>
+              ))}
+            </>
+          )}
         </Dialog>
       </WorkoutItemCard>
       <Card marginB-15 marginT-20 padding-20>

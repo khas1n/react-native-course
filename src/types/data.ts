@@ -6,10 +6,10 @@ export interface Workout {
   name: string;
   duration: number;
   difficulty: Difficulty;
-  sequence: Sequance[];
+  sequence: Sequence[];
 }
 
-export interface Sequance {
+export interface Sequence {
   slug: string;
   name: string;
   type: SequenceType;

@@ -1,16 +1,23 @@
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useState } from "react";
+import { FlatList } from "react-native";
 
-import { View, Text, Button } from "react-native-ui-lib";
+import { View, Text, Button, Card } from "react-native-ui-lib";
+import slugify from "slugify";
 import ExerciseForm, { ExerciseFormData } from "../components/ExerciseForm";
-import { Sequance, SequenceType } from "../types/data";
+import ExerciseItem from "../components/ExerciseItem";
+import Dialog from "../components/styled/Dialog";
+import WorkoutForm, { WorkoutFormData } from "../components/WorkoutForm";
+import { storeWorkout } from "../storage/workout";
+import { Difficulty, Sequence, SequenceType, Workout } from "../types/data";
 
 type PlannerScreennProps = NativeStackHeaderProps;
 
 const PlannerScreen: React.FC<PlannerScreennProps> = ({ navigation }) => {
-  const handleFormSubmit = (form: ExerciseFormData) => {
-    const sequenceItem: Sequance = {
-      slug: form.name + Date.now(),
+  const [seqItems, setSeqItems] = useState<Sequence[]>([]);
+  const handleExerciseSubmit = (form: ExerciseFormData) => {
+    const sequenceItem: Sequence = {
+      slug: slugify(form.name + " " + Date.now(), { lower: true }),
       name: form.name,
       type: form.type as SequenceType,
       duration: Number(form.duration),
@@ -21,11 +28,79 @@ const PlannerScreen: React.FC<PlannerScreennProps> = ({ navigation }) => {
     }
 
     console.log(sequenceItem);
+    setSeqItems([...seqItems, sequenceItem]);
+  };
+
+  const computeDiff = (exercisesCount: number, workoutDuration: number): Difficulty => {
+    const intensity = workoutDuration / exercisesCount;
+
+    if (intensity <= 60) {
+      return "hard";
+    } else if (intensity <= 100) {
+      return "normal";
+    } else {
+      return "easy";
+    }
+  };
+
+  const handleWorkoutSubmit = async (form: WorkoutFormData) => {
+    if (seqItems.length > 0) {
+      const duration = seqItems.reduce((acc, item) => {
+        return acc + item.duration;
+      }, 0);
+
+      const workout: Workout = {
+        name: form.name,
+        slug: slugify(form.name + " " + Date.now(), { lower: true }),
+        difficulty: computeDiff(seqItems.length, duration),
+        sequence: [...seqItems],
+        duration,
+      };
+
+      console.log(workout);
+      await storeWorkout(workout);
+    }
   };
 
   return (
-    <View padding-20 flex>
-      <ExerciseForm onSubmit={handleFormSubmit} />
+    <View flex paddingH-20>
+      <Card padding-20 marginT-20 marginB-20>
+        <ExerciseForm onSubmit={handleExerciseSubmit} />
+        <Dialog
+          height={320}
+          activator={({ handleOpen }) => {
+            return <Button disabled={!seqItems.length} label="Create Workout" size={Button.sizes.medium} onPress={handleOpen} />;
+          }}>
+          {({ handleClose }) => (
+            <WorkoutForm
+              onSubmit={async (data) => {
+                await handleWorkoutSubmit(data);
+                handleClose();
+                navigation.push("Root");
+              }}
+            />
+          )}
+        </Dialog>
+      </Card>
+      <FlatList
+        data={seqItems}
+        renderItem={({ item, index }) => (
+          <ExerciseItem item={item}>
+            <Button
+              link
+              onPress={() => {
+                const items = [...seqItems];
+                items.splice(index, 1);
+                setSeqItems(items);
+              }}
+              label="Remove"
+              textSubtitle
+              textBold
+            />
+          </ExerciseItem>
+        )}
+        keyExtractor={(item) => item.slug}
+      />
     </View>
   );
 };

@@ -23,12 +23,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <View backgroundColor={Colors.grey70} flex-1>
       <FlatList renderItem={renderWorkoutItem} data={workouts} keyExtractor={(item) => item.slug} />
-      <View>
-        <ActionBar
-          backgroundColor={Colors.primary}
-          actions={[{ label: "+ Add Workout", onPress: () => Alert.alert("hide"), white: true }]}
-        />
-      </View>
     </View>
   );
 };

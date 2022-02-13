@@ -8,7 +8,10 @@ interface DialogProps {
     handleOpen: () => void;
   }>;
   height?: number | string;
-  children: React.ReactNode;
+  children: React.FC<{
+    handleOpen: () => void;
+    handleClose: () => void;
+  }>;
 }
 
 const Dialog: React.FC<DialogProps> = ({ activator: Activator, height, children }) => {
@@ -28,6 +31,9 @@ const Dialog: React.FC<DialogProps> = ({ activator: Activator, height, children 
     );
   };
 
+  const handleOpen = () => setShowDialog(true);
+  const handleClose = () => setShowDialog(false);
+
   return (
     <>
       <DialogDefault
@@ -43,17 +49,17 @@ const Dialog: React.FC<DialogProps> = ({ activator: Activator, height, children 
         ignoreBackgroundPress>
         <View flex>
           <View marginV-20 marginH-20>
-            {children}
+            {children({ handleOpen, handleClose })}
           </View>
           <View flex bottom>
             <View height={2} bg-grey70 top />
             <View right margin-20>
-              <Button text60 label="Close" link onPress={() => setShowDialog(false)} />
+              <Button text60 label="Close" link onPress={handleClose} />
             </View>
           </View>
         </View>
       </DialogDefault>
-      {Activator ? <Activator handleOpen={() => setShowDialog(true)} /> : <PressableText onPress={() => setShowDialog(true)} text="Open" />}
+      {Activator ? <Activator handleOpen={handleOpen} /> : <PressableText onPress={handleOpen} text="Open" />}
     </>
   );
 };

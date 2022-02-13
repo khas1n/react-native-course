@@ -1,11 +1,8 @@
-import React, { useState } from "react";
-import { Card, Text, Button, View, Incubator, Colors, Keyboard, Picker } from "react-native-ui-lib";
+import React from "react";
+import { Text, Button, View, Incubator, Colors, Picker } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
 import { ScrollView, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-const { KeyboardAwareInsetsView } = Keyboard;
 const { TextField } = Incubator;
-import dropdown from "../../assets/icons/chevronDown.png";
 
 export type ExerciseFormData = {
   name: string;
@@ -28,9 +25,9 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onSubmit }) => {
   const { control, handleSubmit } = useForm();
 
   return (
-    <ScrollView keyboardShouldPersistTaps="always">
-      <Card padding-20>
-        <Text textBold>Exercise Form</Text>
+    <>
+      <Text textBold>Exercise Form</Text>
+      <ScrollView>
         <View paddingV-20>
           <View row>
             <View flex marginR-5>
@@ -76,7 +73,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onSubmit }) => {
                 }}
                 name="type"
                 render={({ field: { onChange, value } }) => (
-                  <Picker title="Type" useNativePicker value={value} onChange={onChange} rightIconSource={dropdown}>
+                  <Picker label="Type" title="Type" fieldStyle={styles.withFrame} value={value} onChange={onChange} migrate>
                     {selectionItems.map((option) => (
                       <Picker.Item key={option.value} value={option.value} label={option.label} />
                     ))}
@@ -86,16 +83,15 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onSubmit }) => {
             </View>
           </View>
           <Button
-            label="Submit"
+            label="Add Exercise"
             onPress={handleSubmit((data) => {
               onSubmit(data as ExerciseFormData);
             })}
             size={Button.sizes.medium}
           />
         </View>
-        <KeyboardAwareInsetsView />
-      </Card>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 };
 

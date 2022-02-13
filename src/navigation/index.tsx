@@ -1,5 +1,5 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome, Entypo } from "@expo/vector-icons";
@@ -7,10 +7,11 @@ import { FontAwesome, Entypo } from "@expo/vector-icons";
 import HomeScreen from "../screens/HomeScreen";
 import PlannerScreen from "../screens/PlannerScreen";
 import WorkoutDetailScreen from "../screens/WorkoutDetailScreen";
+import { ColorSchemeName } from "react-native";
 
-export default (): JSX.Element => {
+export default ({ colorScheme }: { colorScheme: ColorSchemeName }): JSX.Element => {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={colorScheme === "light" ? DefaultTheme : DarkTheme}>
       <RootNavigator />
     </NavigationContainer>
   );
@@ -52,6 +53,7 @@ const BottomTabNavigator: React.FC = () => {
         name="Planner"
         component={PlannerScreen}
         options={{
+          unmountOnBlur: true,
           tabBarIcon: ({ color, size }) => <Entypo name="add-to-list" size={size} color={color} />,
           headerStyle,
         }}

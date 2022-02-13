@@ -114,7 +114,7 @@ const WorkoutDetailScreen: React.FC<WorkoutDetailScreenProps> = ({ route }) => {
               />
             )}
           </View>
-          {trackerIdx !== -1 && (
+          {sequence.length > 0 && countDown >= 0 && (
             <View flex center>
               <Text style={{ fontSize: 65, flex: 1, alignItems: "center" }}>
                 {countDown < 0

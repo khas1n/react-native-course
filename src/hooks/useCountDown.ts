@@ -15,7 +15,7 @@ export function useCountDown(idx: number, initialCount = -1) {
         setCountDown((count) => {
           return count - 1;
         });
-      }, 50);
+      }, 500);
     }
 
     return cleanup;

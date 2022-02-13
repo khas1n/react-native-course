@@ -28,7 +28,7 @@ const ExerciseForm: React.FC<ExerciseFormProps> = ({ onSubmit }) => {
     <>
       <Text textBold>Exercise Form</Text>
       <ScrollView>
-        <View paddingV-20>
+        <View paddingT-20>
           <View row>
             <View flex marginR-5>
               <Controller

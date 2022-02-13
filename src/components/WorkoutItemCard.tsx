@@ -11,8 +11,8 @@ interface WorkoutItemProps {
 }
 
 const WorkoutItemCard: React.FC<WorkoutItemProps> = ({ item, children, childStyles = {} }) => (
-  <Card borderRadius={20} useNative backgroundColor={Colors.white} activeOpacity={1}>
-    <View padding-20 bg-white>
+  <Card>
+    <View padding-20>
       <Text textTitle textBold color={Colors.grey10}>
         {item.name}
       </Text>

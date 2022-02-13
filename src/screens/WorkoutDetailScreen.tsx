@@ -1,7 +1,7 @@
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
-import { View, Text, Button } from "react-native-ui-lib";
+import { View, Text, Button, Card } from "react-native-ui-lib";
 import { useWorkoutBySlug } from "../hooks/useWorkoutBySlug";
 import { Sequance, Workout } from "../types/data";
 
@@ -25,12 +25,21 @@ const WorkoutDetailScreen: React.FC<WorkoutDetailScreenProps> = ({ route }) => {
   const [trackerIdx, setTrackerIdx] = useState(-1);
   const [sequence, setSequence] = useState<Sequance[]>([]);
 
-  const countDown = useCountDown(trackerIdx, trackerIdx >= 0 ? sequence[trackerIdx].duration : -1);
+  const { countDown, isRunning, stop, start } = useCountDown(trackerIdx);
+  const startupSeq = ["3", "2", "1", "Go"].reverse();
 
   const addItemToSequence = (idx: number) => {
     if (workout) {
+      let newSequence = [];
+
+      if (idx > 0) {
+        newSequence = [...sequence, workout.sequence[idx]];
+      } else {
+        newSequence = [workout.sequence[idx]];
+      }
       setTrackerIdx(idx);
-      setSequence([...sequence, workout.sequence[idx]]);
+      setSequence(newSequence);
+      start(newSequence[idx].duration + startupSeq.length);
     }
   };
 
@@ -80,19 +89,45 @@ const WorkoutDetailScreen: React.FC<WorkoutDetailScreenProps> = ({ route }) => {
           ))}
         </Dialog>
       </WorkoutItemCard>
-      <View style={styles.centerView} marginB-15 marginT-40>
-        {sequence.length === 0 && <FontAwesome name="play-circle-o" size={100} onPress={() => addItemToSequence(0)} />}
-        {trackerIdx !== -1 && (
-          <View>
-            <Text style={{ fontSize: 65 }}>{countDown < 0 ? 0 : countDown}</Text>
+      <Card marginB-15 marginT-20 padding-20>
+        <View style={styles.centerUI}>
+          <View flex center>
+            {sequence.length === 0 ? (
+              <FontAwesome name="play-circle-o" size={100} onPress={() => addItemToSequence(0)} />
+            ) : isRunning ? (
+              <FontAwesome name="stop-circle-o" size={100} onPress={() => stop()} />
+            ) : (
+              <FontAwesome
+                name="play-circle-o"
+                size={100}
+                onPress={() => {
+                  if (hasReachedEnd) {
+                    addItemToSequence(0);
+                  } else {
+                    start(countDown);
+                  }
+                }}
+              />
+            )}
           </View>
-        )}
-      </View>
-      <View center>
-        <Text textBold style={{ fontSize: 56, textAlign: "center" }}>
-          {sequence.length === 0 ? "Prepare" : hasReachedEnd ? "Great Job!" : sequence[trackerIdx].name}
-        </Text>
-      </View>
+          {trackerIdx !== -1 && (
+            <View flex center>
+              <Text style={{ fontSize: 65, flex: 1, alignItems: "center" }}>
+                {countDown < 0
+                  ? 0
+                  : countDown > sequence[trackerIdx].duration
+                  ? startupSeq[countDown - sequence[trackerIdx].duration - 1]
+                  : countDown}
+              </Text>
+            </View>
+          )}
+        </View>
+        <View center>
+          <Text textBold style={{ fontSize: 56, textAlign: "center" }}>
+            {sequence.length === 0 ? "Prepare" : hasReachedEnd ? "Great Job!" : sequence[trackerIdx].name}
+          </Text>
+        </View>
+      </Card>
     </View>
   );
 };
@@ -101,7 +136,7 @@ const styles = StyleSheet.create({
   sequanceItem: {
     alignItems: "center",
   },
-  centerView: {
+  centerUI: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
